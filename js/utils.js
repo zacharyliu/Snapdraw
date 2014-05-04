@@ -27,6 +27,15 @@ define('utils', [''], function() {
                 ((0|(1<<8) + r + (256 - r) * percent).toString(16)).substr(1) +
                 ((0|(1<<8) + g + (256 - g) * percent).toString(16)).substr(1) +
                 ((0|(1<<8) + b + (256 - b) * percent).toString(16)).substr(1);
+        },
+        /**
+         * Generates a random hex color
+         * TODO: only generate highly visible, brightly saturated colors
+         * http://clicktime.com/intern/summer2014/
+         * @returns {string}
+         */
+        randomColor: function() {
+            return '#'+Math.random().toString(16).substr(-6);
         }
     };
 });

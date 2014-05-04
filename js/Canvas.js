@@ -5,6 +5,7 @@ define('Canvas', ['jquery', 'utils', 'CanvasDelta', 'config'], function($, utils
         this.context = this.canvas.getContext('2d');
         this.history = [];
         this.timeOffset = 0;
+        this.myColor = utils.randomColor();
     };
 
     /**
@@ -88,7 +89,7 @@ define('Canvas', ['jquery', 'utils', 'CanvasDelta', 'config'], function($, utils
             var now = utils.timestamp();
             if (paint && previousTime < now - 1/config.DRAW_FPS) {
                 var newPosition = [e.pageX - this.offsetLeft, e.pageY - this.offsetTop];
-                that.pushDelta(new CanvasDelta(previousPosition, newPosition, '#123456'));
+                that.pushDelta(new CanvasDelta(previousPosition, newPosition, that.myColor));
                 previousPosition = newPosition;
                 previousTime = now;
             }

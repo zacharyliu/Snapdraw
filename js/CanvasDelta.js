@@ -10,6 +10,7 @@ define('CanvasDelta', ['Canvas', 'utils', 'config'], function(Canvas, utils, con
         context.beginPath();
         context.moveTo(this.start[0], this.start[1]);
         context.lineTo(this.end[0], this.end[1]);
+        context.lineWidth = 5;
         context.stroke();
     };
 
