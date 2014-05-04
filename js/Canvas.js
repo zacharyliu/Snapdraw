@@ -1,14 +1,11 @@
-define('Canvas', ['jquery', 'utils'], function($, utils) {
+define('Canvas', ['jquery', 'utils', 'CanvasDelta', 'config'], function($, utils, CanvasDelta, config) {
     var Canvas = function(selector) {
+        this.$canvas = $(selector);
         this.canvas = $(selector)[0];
         this.context = this.canvas.getContext('2d');
         this.history = [];
         this.timeOffset = 0;
     };
-
-    Canvas.HISTORY_DURATION = 3; // duration of maintained history in seconds
-    Canvas.RENDER_FPS = 5;
-    Canvas.SYNC_FPS = 2;
 
     /**
      * Clear the canvas
@@ -42,7 +39,7 @@ define('Canvas', ['jquery', 'utils'], function($, utils) {
         var now = utils.timestamp();
         var count = 0;
         while (this.history.length > 0) {
-            if (this.history[0][0] < now - Canvas.HISTORY_DURATION * 2) {
+            if (this.history[0][0] < now - config.HISTORY_DURATION * 2) {
                 this.history.shift();
                 count++;
             } else {
@@ -58,10 +55,11 @@ define('Canvas', ['jquery', 'utils'], function($, utils) {
 
     Canvas.prototype._renderLoop = function() {
         this._trimHistory();
+        this.clear();
         var now = utils.timestamp();
         for (var i=0; i<this.history.length; i++) {
             var timestamp = this.history[i][0];
-            if (timestamp > now - Canvas.HISTORY_DURATION - this.timeOffset
+            if (timestamp > now - config.HISTORY_DURATION - this.timeOffset
                 && timestamp < now - this.timeOffset) {
                 var canvasDelta = this.history[i][1];
                 canvasDelta.render(this.canvas, this.context, now - this.timeOffset - timestamp);
@@ -76,9 +74,34 @@ define('Canvas', ['jquery', 'utils'], function($, utils) {
 
     Canvas.prototype.init = function() {
         var that = this;
-        this._loopInterval = setInterval(function() {
+
+        // Mouse paint functions
+        // TODO: refactor out into its own section
+        var paint;
+        var previousPosition;
+        var previousTime;
+        this.$canvas.mousedown(function(e) {
+            previousPosition = [e.pageX - this.offsetLeft, e.pageY - this.offsetTop];
+            previousTime = utils.timestamp();
+            paint = true;
+        }).mousemove(function(e) {
+            var now = utils.timestamp();
+            if (paint && previousTime < now - 1/config.DRAW_FPS) {
+                var newPosition = [e.pageX - this.offsetLeft, e.pageY - this.offsetTop];
+                that.pushDelta(new CanvasDelta(previousPosition, newPosition, '#123456'));
+                previousPosition = newPosition;
+                previousTime = now;
+            }
+        }).mouseup(function(e) {
+            paint = false;
+        }).mouseleave(function(e) {
+            paint = false;
+        });
+
+        // Start render loop
+        this._renderLoopInterval = setInterval(function() {
             that._renderLoop();
-        }, 1/Canvas.RENDER_FPS);
+        }, 1/config.RENDER_FPS*1000);
     };
 
     return Canvas;
