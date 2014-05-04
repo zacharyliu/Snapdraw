@@ -6,9 +6,9 @@ define('Canvas', ['jquery', 'utils'], function($, utils) {
         this.timeOffset = 0;
     };
 
-    Canvas.HISTORY_DURATION = 30; // duration of maintained history in seconds
-    Canvas.RENDER_FPS = 10;
-    Canvas.SYNC_FPS = 3;
+    Canvas.HISTORY_DURATION = 3; // duration of maintained history in seconds
+    Canvas.RENDER_FPS = 5;
+    Canvas.SYNC_FPS = 2;
 
     /**
      * Clear the canvas
@@ -56,7 +56,7 @@ define('Canvas', ['jquery', 'utils'], function($, utils) {
         this.history.push([utils.timestamp(), canvasDelta]);
     };
 
-    Canvas.prototype._loop = function() {
+    Canvas.prototype._renderLoop = function() {
         this._trimHistory();
         var now = utils.timestamp();
         for (var i=0; i<this.history.length; i++) {
@@ -64,20 +64,20 @@ define('Canvas', ['jquery', 'utils'], function($, utils) {
             if (timestamp > now - Canvas.HISTORY_DURATION - this.timeOffset
                 && timestamp < now - this.timeOffset) {
                 var canvasDelta = this.history[i][1];
-                canvasDelta.render(this.canvas, this.context);
+                canvasDelta.render(this.canvas, this.context, now - this.timeOffset - timestamp);
             }
         }
     };
 
     Canvas.prototype.setTimeOffset = function(timeOffset) {
         this.timeOffset = timeOffset;
-        this._loop();
+        this._renderLoop();
     };
 
     Canvas.prototype.init = function() {
         var that = this;
         this._loopInterval = setInterval(function() {
-            that._loop();
+            that._renderLoop();
         }, 1/Canvas.RENDER_FPS);
     };
 

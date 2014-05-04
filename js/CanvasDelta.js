@@ -1,10 +1,16 @@
-define('CanvasDelta', [''], function() {
-    var CanvasDelta = function(type, start, end, color) {
-
+define('CanvasDelta', ['Canvas', 'utils'], function(Canvas, utils) {
+    var CanvasDelta = function(start, end, color) {
+        this.start = start;
+        this.end = end;
+        this.color = color;
     };
 
-    CanvasDelta.prototype.render = function(canvas, context) {
-
+    CanvasDelta.prototype.render = function(canvas, context, timePassed) {
+        context.strokeStyle = utils.fadeColor(this.color, timePassed / Canvas.HISTORY_DURATION);
+        context.beginPath();
+        context.moveTo(this.start[0], this.start[1]);
+        context.lineTo(this.end[0], this.end[1]);
+        context.stroke();
     };
 
     return CanvasDelta;
