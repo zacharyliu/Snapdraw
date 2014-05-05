@@ -100,5 +100,23 @@ define('Canvas', ['jquery', 'utils', 'CanvasDelta', 'config'], function($, utils
         }, 1/config.RENDER_FPS*1000);
     };
 
+    Canvas.prototype.exportData = function() {
+        var now = utils.timestamp(),
+            exportData = [];
+        for (var i=0; i<this.history.length; i++) {
+            exportData.push([this.history[i][0] - now, this.history[i][1].toJSON()]);
+        }
+        return exportData;
+    };
+
+    Canvas.prototype.importData = function(exportData) {
+        var now = utils.timestamp();
+        for (var i=0; i<exportData.length; i++) {
+            var historyItem = [exportData[i][0] + now,
+                new CanvasDelta(exportData[i][1].start, exportData[i][1].end, exportData[i][1].color)];
+            this.history.push(historyItem);
+        }
+    };
+
     return Canvas;
 });

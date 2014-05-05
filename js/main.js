@@ -31,6 +31,8 @@ require(['jquery', 'socket.io', 'utils', 'config', 'Canvas', 'CanvasDelta'], fun
             canvas = new Canvas('#canvas');
             canvas.init();
 
+            var paired = false,
+                synced = false;
             socket.on('message', function(data) {
                 switch (data.type) {
                     case 'draw':
@@ -38,8 +40,80 @@ require(['jquery', 'socket.io', 'utils', 'config', 'Canvas', 'CanvasDelta'], fun
                             canvas.pushDelta(new CanvasDelta(data.data[i].start, data.data[i].end, data.data[i].color));
                         }
                         break;
+
+                    /** Following code handles initial peer-to-peer pair-and-sync,
+                     * to send current canvas history data to new clients.
+                     *
+                     * First, the newly loaded script sends a "request-broadcast" event to all others.
+                     * All others reply back with a "request-broadcast-reply" event,
+                     *   specifically targeted at the new client, offering to pair.
+                     * The first event reply received by the new client is the chosen pair,
+                     *   and a "request-data" event is sent specifically to them.
+                     * The chosen pair then replies back with a "request-data-reply" event
+                     *   containing a serialized export of the history with relative timestamps.
+                     * This export data is then imported by the new client.
+                     *
+                     * If no "request-broadcast-reply" event is received within the timeout period,
+                     *   it assumes that no other clients are connected and starts with a blank canvas.
+                     *
+                     * Although the sync protocol is not perfect, since the history operates on a rolling basis,
+                     *   any errors in initial sync will soon disappear anyway.
+                     **/
+                    case 'request-broadcast':
+                        if (synced) {
+                            socket.emit('message', {
+                                type: 'request-broadcast-reply',
+                                data: {
+                                    myColor: canvas.myColor
+                                }
+                            })
+                        }
+                        break;
+                    case 'request-broadcast-reply':
+                        if (!paired) {
+                            console.log('Paired with and requesting sync with ' + data.data.myColor);
+                            paired = true;
+                            socket.emit('message', {
+                                type: 'request-data',
+                                data: {
+                                    targetColor: data.data.myColor,
+                                    myColor: canvas.myColor
+                                }
+                            });
+                        }
+                        break;
+                    case 'request-data':
+                        if (synced && data.data.targetColor == canvas.myColor) {
+                            console.log('Sending sync data to ' + data.data.myColor);
+                            var exportData = canvas.exportData();
+                            socket.emit('message', {
+                                type: 'request-data-reply',
+                                data: {
+                                    targetColor: data.data.myColor,
+                                    myColor: canvas.myColor,
+                                    exportData: JSON.stringify(exportData)
+                                }
+                            })
+                        }
+                        break;
+                    case 'request-data-reply':
+                        if (paired && !synced && data.data.targetColor == canvas.myColor) {
+                            console.log('Got sync data from ' + data.data.myColor);
+                            canvas.importData(JSON.parse(data.data.exportData));
+                            synced = true;
+                        }
+                        break;
                 }
             });
+            socket.emit('message', {
+                type: 'request-broadcast'
+            });
+            setTimeout(function() {
+                // if no pair reply received in a reasonable time, assume it's the only connected client
+                if (!paired) {
+                    synced = true;
+                }
+            }, 2000);
 
             var sendQueue = [];
 
@@ -82,7 +156,6 @@ require(['jquery', 'socket.io', 'utils', 'config', 'Canvas', 'CanvasDelta'], fun
 
             setInterval(function() {
                 var offset = ($time.parent().width() - $time.width()) / $time.parent().width() * config.HISTORY_DURATION;
-                console.log(offset);
                 canvas.setTimeOffset(offset);
             }, 100);
         });
