@@ -135,6 +135,18 @@ require(['jquery', 'socket.io', 'utils', 'config', 'Canvas', 'CanvasDelta', 'Tim
             }, 1/config.SYNC_FPS*1000);
 
             var timeSlider = new TimeSlider('#time', canvas);
+
+            $('#time-wrap').popover({
+                trigger: 'click'
+            }).popover('show').on('hidden.bs.popover', function() {
+                $(this).popover('destroy')
+            });
+
+            $('#canvas').popover({
+                trigger: 'click'
+            }).popover('show').on('hidden.bs.popover', function() {
+                $(this).popover('destroy')
+            });
         });
     });
 });
