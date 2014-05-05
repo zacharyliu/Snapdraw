@@ -1,7 +1,8 @@
 define('Canvas', ['jquery', 'utils', 'CanvasDelta', 'config'], function($, utils, CanvasDelta, config) {
     var Canvas = function(selector) {
-        this.$canvas = $(selector);
-        this.canvas = $(selector)[0];
+        $(selector).html('<canvas width="500" height="500"></canvas>');
+        this.$canvas = $(selector).find('canvas');
+        this.canvas = this.$canvas[0];
         this.context = this.canvas.getContext('2d');
         this.history = [];
         this.timeOffset = 0;
@@ -16,9 +17,11 @@ define('Canvas', ['jquery', 'utils', 'CanvasDelta', 'config'], function($, utils
      */
     Canvas.prototype.clear = function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        var w = this.canvas.width;
+
+        // clear code below not needed in Chrome
+        /*var w = this.canvas.width;
         this.canvas.width = 1;
-        this.canvas.width = w;
+        this.canvas.width = w;*/
     };
 
     /**
