@@ -81,7 +81,7 @@ define('Canvas', ['jquery', 'utils', 'CanvasDelta', 'config'], function($, utils
                 var newPosition = [e.pageX - this.offsetLeft, e.pageY - this.offsetTop];
                 var canvasDelta = new CanvasDelta(previousPosition, newPosition, that.myColor);
                 that.pushDelta(canvasDelta);
-                that.emit('draw');
+                that.emit('draw', [canvasDelta.toJSON()]);
                 previousPosition = newPosition;
                 previousTime = now;
             }
