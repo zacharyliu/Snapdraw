@@ -116,12 +116,14 @@ require(['jquery', 'socket.io', 'utils', 'config', 'Canvas', 'CanvasDelta', 'Tim
                 }
             }, 2000);
 
-            var sendQueue = [];
 
+            /**
+             * Queue up drawn lines and send in batches
+             */
+            var sendQueue = [];
             canvas.on('draw', function(e, canvasDelta) {
                 sendQueue.push(canvasDelta);
             });
-
             var sendInterval = setInterval(function() {
                 if (sendQueue.length > 0) {
                     socket.emit('message', {
