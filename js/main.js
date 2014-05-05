@@ -19,7 +19,8 @@ require.config({
     deps: ['bootstrap', 'jquery', 'jquery-ui', 'modernizr', 'jquery.eventemitter']
 });
 
-require(['jquery', 'socket.io', 'utils', 'config', 'Canvas', 'CanvasDelta'], function($, io, utils, config, Canvas, CanvasDelta) {
+require(['jquery', 'socket.io', 'utils', 'config', 'Canvas', 'CanvasDelta', 'TimeSlider'],
+    function($, io, utils, config, Canvas, CanvasDelta, TimeSlider) {
     $(function() {
         var base = 'http://clicktime.herokuapp.com:80/rooms/';
         var roomName = 'SnapDraw';    // Replace this with your own room name
@@ -131,33 +132,7 @@ require(['jquery', 'socket.io', 'utils', 'config', 'Canvas', 'CanvasDelta'], fun
                 }
             }, 1/config.SYNC_FPS*1000);
 
-            var $time = $('#time');
-
-            var dragging = true;
-            $time.parent().mousedown(function(e) {
-                dragging = true;
-                $time.stop().css({width: e.pageX - this.offsetLeft});
-            });
-            $(window).mousemove(function(e) {
-                if (dragging) {
-                    $time.stop().css({width: e.pageX - $time[0].offsetLeft});
-                }
-            }).mouseup(function() {
-                if (dragging) {
-                    dragging = false;
-                    $time.stop().animate({
-                        width: "100%"
-                    }, {
-                        duration: 1000,
-                        easing: 'easeOutExpo'
-                    });
-                }
-            }).trigger('mouseup');
-
-            setInterval(function() {
-                var offset = ($time.parent().width() - $time.width()) / $time.parent().width() * config.HISTORY_DURATION;
-                canvas.setTimeOffset(offset);
-            }, 100);
+            var timeSlider = new TimeSlider('#time', canvas);
         });
     });
 });
