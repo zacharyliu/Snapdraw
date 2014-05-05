@@ -8,6 +8,8 @@ define('Canvas', ['jquery', 'utils', 'CanvasDelta', 'config'], function($, utils
         this.myColor = utils.randomColor();
     };
 
+    $.extend(Canvas.prototype, $.eventEmitter);
+
     /**
      * Clear the canvas
      * https://stackoverflow.com/a/4085780/133211
@@ -17,18 +19,6 @@ define('Canvas', ['jquery', 'utils', 'CanvasDelta', 'config'], function($, utils
         var w = this.canvas.width;
         this.canvas.width = 1;
         this.canvas.width = w;
-    };
-
-    Canvas.prototype.draw = function() {
-        if (this.canvas.getContext) {
-            var ctx = this.canvas.getContext('2d');
-
-            var offset = (Math.random() * 1000);
-            var offset2 = (Math.random() * 1000);
-            ctx.fillRect(25+offset,25+offset2,100,100);
-            ctx.clearRect(45+offset,45+offset2,60,60);
-            ctx.strokeRect(50+offset,50+offset2,50,50);
-        }
     };
 
     /**
@@ -89,7 +79,9 @@ define('Canvas', ['jquery', 'utils', 'CanvasDelta', 'config'], function($, utils
             var now = utils.timestamp();
             if (paint && previousTime < now - 1/config.DRAW_FPS) {
                 var newPosition = [e.pageX - this.offsetLeft, e.pageY - this.offsetTop];
-                that.pushDelta(new CanvasDelta(previousPosition, newPosition, that.myColor));
+                var canvasDelta = new CanvasDelta(previousPosition, newPosition, that.myColor);
+                that.pushDelta(canvasDelta);
+                that.emit('draw');
                 previousPosition = newPosition;
                 previousTime = now;
             }
