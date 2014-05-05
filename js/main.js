@@ -2,17 +2,19 @@ require.config({
     baseUrl: 'js',
     paths: {
         jquery: 'vendor/jquery-1.10.2.min',
+        'jquery-ui': 'vendor/jquery-ui-1.10.4.min',
         modernizr: 'vendor/modernizr-2.6.2.min',
         'jquery.eventemitter': 'vendor/jquery.eventemitter',
         'socket.io': 'http://clicktime.herokuapp.com/socket.io/socket.io.js'
     },
     shim: {
+        'jquery-ui': ['jquery'],
         'jquery.eventemitter': ['jquery'],
         'socket.io': {
             exports: 'io'
         }
     },
-    deps: ['jquery', 'modernizr', 'jquery.eventemitter']
+    deps: ['jquery', 'jquery-ui', 'modernizr', 'jquery.eventemitter']
 });
 
 require(['jquery', 'socket.io', 'utils', 'config', 'Canvas', 'CanvasDelta'], function($, io, utils, config, Canvas, CanvasDelta) {
@@ -52,5 +54,27 @@ require(['jquery', 'socket.io', 'utils', 'config', 'Canvas', 'CanvasDelta'], fun
                 sendQueue = [];
             }
         }, 1/config.SYNC_FPS*1000);
+
+        var $input = $('input[name="range"]');
+
+        $input.attr({min: -config.HISTORY_DURATION, max: 0, step: 1, value: 0});
+
+        $input.mousedown(function() {
+            $input.stop();
+        }).mouseup(function() {
+            $({value: $input.val()}).animate({
+                value: 0
+            }, {
+                duration: 1000,
+                easing: 'easeOutExpo',
+                step: function() {
+                    $input.val(this.value);
+                }
+            })
+        });
+
+        setInterval(function() {
+            canvas.setTimeOffset(-$input.val());
+        }, 100);
     });
 });
