@@ -5,6 +5,11 @@ html, body {
 .navbar {
   margin-bottom: -60px;
   border-radius: 0;
+
+  .navbar-text {
+    margin-right: 15px !important;
+    font-style: italic;
+  }
 }
 
 $container-padding: 50px;

@@ -4,6 +4,9 @@ html, body {
 .navbar {
   margin-bottom: -60px;
   border-radius: 0; }
+  .navbar .navbar-text {
+    margin-right: 15px !important;
+    font-style: italic; }
 
 #container {
   box-sizing: content-box;
