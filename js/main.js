@@ -23,9 +23,10 @@ require(['jquery', 'socket.io', 'utils', 'config', 'Canvas', 'CanvasDelta'], fun
         var roomName = 'my-awesome-room-19312831237';    // Replace this with your own room name
         var socket = io.connect(base + roomName);
 
-        var canvas = new Canvas('#canvas');
+        var canvas;
 
         socket.on('welcome', function() {
+            canvas = new Canvas('#canvas');
             canvas.init();
         });
 
