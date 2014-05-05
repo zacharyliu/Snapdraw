@@ -12,19 +12,35 @@
 
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-        <link rel="stylesheet" href="css/normalize.css">
-        <link rel="stylesheet" href="css/main.css">
+        <!--<link rel="stylesheet" href="css/normalize.css">-->
+        <!--<link rel="stylesheet" href="css/main.css">-->
+        <link rel="stylesheet" href="css/bootstrap.flatly.min.css">
+        <link rel="stylesheet" href="css/style.css">
         <script data-main="js/main" src="js/vendor/require.js"></script>
     </head>
     <body>
-        <!--[if lt IE 7]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
+        <div class="navbar navbar-inverse">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-inverse-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#"><strong>SnapDraw</strong> : <em>the ephemeral canvas</em></a>
+            </div>
+            <div class="navbar-collapse collapse navbar-inverse-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="http://twitter.com/zacharyliu">@zacharyliu</a></li>
+                </ul>
+            </div>
+        </div>
 
-        <!-- Add your site or application content here -->
-        <div id="canvas"></div>
-
-        <input type="range" name="range">
+        <div id="container" class="container">
+            <div id="canvas">Loading...</div>
+            <div class="progress progress-striped active" id="time-wrap">
+                <div class="progress-bar progress-bar-success" id="time" style="width: 0"></div>
+            </div>
+        </div>
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
         <script>

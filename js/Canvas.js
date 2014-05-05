@@ -1,6 +1,6 @@
 define('Canvas', ['jquery', 'utils', 'CanvasDelta', 'config'], function($, utils, CanvasDelta, config) {
     var Canvas = function(selector) {
-        $(selector).html('<canvas width="500" height="500"></canvas>');
+        $(selector).addClass('loaded').html('<canvas width="500" height="500"></canvas>');
         this.$canvas = $(selector).find('canvas');
         this.canvas = this.$canvas[0];
         this.context = this.canvas.getContext('2d');
