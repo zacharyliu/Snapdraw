@@ -22,7 +22,7 @@ require.config({
 require(['jquery', 'socket.io', 'utils', 'config', 'Canvas', 'CanvasDelta', 'TimeSlider'],
     function($, io, utils, config, Canvas, CanvasDelta, TimeSlider) {
     $(function() {
-        var base = 'https://clicktime.herokuapp.com:80/rooms/';
+        var base = 'https://clicktime.herokuapp.com/rooms/';
         var roomName = 'Snapdraw';    // Replace this with your own room name
         var socket = io.connect(base + roomName);
 
