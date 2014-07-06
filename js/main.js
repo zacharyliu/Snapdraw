@@ -6,7 +6,7 @@ require.config({
         'jquery-ui': 'vendor/jquery-ui-1.10.4.min',
         modernizr: 'vendor/modernizr-2.6.2.min',
         'jquery.eventemitter': 'vendor/jquery.eventemitter',
-        'socket.io': 'http://clicktime.herokuapp.com/socket.io/socket.io.js'
+        'socket.io': '//clicktime.herokuapp.com/socket.io/socket.io.js'
     },
     shim: {
         'bootstrap': ['jquery'],
